@@ -1514,7 +1514,7 @@
         clienteId =
           clientes[0].id;
 
-      } else {
+            } else {
 
         const cliente =
           await supabaseFetch(
@@ -1543,12 +1543,20 @@
 
 
         if (
-          cliente &&
-          cliente.length
+          Array.isArray(cliente) &&
+          cliente.length > 0
         ) {
 
           clienteId =
             cliente[0].id;
+
+        } else if (cliente && cliente.id) {
+
+          clienteId = cliente.id;
+
+        } else {
+
+          throw new Error("Não foi possível registrar o cliente.");
 
         }
 

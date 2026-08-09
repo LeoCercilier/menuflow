@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MenuFlow - Painel do Gestor</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      color: #222;
+    }
+
+    header {
+      background: #111;
+      color: white;
+      padding: 18px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .status-conexao {
+      font-size: 13px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: #28a745;
+      color: white;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 20px auto;
+      padding: 0 16px;
+    }
+
+    .filtros {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+
+    .btn-filtro {
+      border: 1px solid #ccc;
+      background: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+      white-space: nowrap;
+      color: #555;
+    }
+
+    .btn-filtro.ativo {
+      background: #111;
+      color: white;
+      border-color: #111;
+    }
+
+    .grid-pedidos {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .card-pedido {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+      border-top: 5px solid #ccc;
+    }
+
+    .card-pedido.recebido { border-top-color: #ffc107; }
+    .card-pedido.preparando { border-top-color: #17a2b8; }
+    .card-pedido.pronto { border-top-color: #28a745; }
+    .card-pedido.saiu_entrega { border-top-color: #6f42c1; }
+    .card-pedido.entregue { border-top-color: #6c757d; }
+    .card-pedido.cancelado { border-top-color: #dc3545; }
+
+    .topo-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .topo-card h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .badge-status {
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: bold;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: #eee;
+    }
+
+    .info-cliente {
+      font-size: 14px;
+      margin-bottom: 12px;
+      color: #444;
+      line-height: 1.4;
+    }
+
+    .itens-lista {
+      background: #f9f9f9;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .item-linha {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .item-linha:last-child {
+      margin-bottom: 0;
+    }
+
+    .total-pedido {
+      font-size: 16px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .acoes-status {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-acao {
+      flex: 1;
+      padding: 8px;
+      border: 0;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 12px;
+      cursor: pointer;
+      color: white;
+    }
+
+    .btn-preparar { background: #17a2b8; }
+    .btn-pronto { background: #28a745; }
+    .btn-entregar { background: #6f42c1; }
+    .btn-concluir { background: #6c757d; }
+    .btn-cancelar { background: #dc3545; color: white; }
+
+    .vazio {
+      text-align: center;
+      padding: 40px;
+      color: #777;
+      grid-column: 1 / -1;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>MenuFlow — Gestor de Pedidos</h1>
+  <span class="status-conexao" id="statusConexao">Ao vivo</span>
+</header>
+
+<div class="container">
+
+  <!-- Filtros de Status -->
+  <div class="filtros">
+    <button class="btn-filtro ativo" onclick="filtrarStatus('todos', this)">Todos</button>
+    <button class="btn-filtro" onclick="filtrarStatus('recebido', this)">Recebidos</button>
+    <button class="btn-filtro" onclick="filtrarStatus('preparando', this)">Em Preparo</button>
+    <button class="btn-filtro" onclick="filtrarStatus('pronto', this)">Prontos</button>
+    <button class="btn-filtro" onclick="filtrarStatus('saiu_entrega', this)">Saiu p/ Entrega</button>
+    <button class="btn-filtro" onclick="filtrarStatus('entregue', this)">Entregues</button>
+  </div>
+
+  <!-- Lista de Pedidos -->
+  <div class="grid-pedidos" id="gridPedidos">
+    <div class="vazio">Carregando pedidos...</div>
+  </div>
+
+</div>
+
+<script>
+  const SUPABASE_URL = "https://onrgwxghqcnvmybyqmmj.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_OzQryJ6i5VGOxhFr6DR-iw_b73GHKnQ";
+  const ESTABELECIMENTO_ID = 1; // Burger House
+
+  let todosPedidos = [];
+  let filtroAtual = 'todos';
+
+  // Helper para requisições ao Supabase
+  async function supabaseFetch(endpoint, options = {}) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
+      ...options,
+      headers: {
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+        "Content-Type": "application/json",
+        ...(options.headers || {})
+      }
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(`Erro ${res.status}: ${err}`);
+    }
+
+    const text = await res.text();
+    return text ? JSON.parse(text) : null;
+  }
+
+  // Carregar todos os pedidos com seus itens
+  async function carregarPedidos() {
+    try {
+      const pedidos = await supabaseFetch(
+        `pedidos?select=*,itens_pedido(*)&estabelecimento_id=eq.${ESTABELECIMENTO_ID}&order=id.desc`
+      );
+
+      todosPedidos = pedidos || [];
+      renderizarPedidos();
+    } catch (err) {
+      console.error("Erro ao carregar pedidos:", err);
+      document.getElementById("statusConexao").textContent = "Erro na conexão";
+      document.getElementById("statusConexao").style.background = "#dc3545";
+    }
+  }
+
+  // Renderizar cards na tela
+  function renderizarPedidos() {
+    const grid = document.getElementById("gridPedidos");
+    grid.innerHTML = "";
+
+    const pedidosFiltrados = filtroAtual === 'todos' 
+      ? todosPedidos 
+      : todosPedidos.filter(p => p.status === filtroAtual);
+
+    if (pedidosFiltrados.length === 0) {
+      grid.innerHTML = `<div class="vazio">Nenhum pedido encontrado.</div>`;
+      return;
+    }
+
+    pedidosFiltrados.forEach(pedido => {
+      const card = document.createElement("div");
+      card.className = `card-pedido ${pedido.status}`;
+
+      const dataFormatada = new Date(pedido.criado_em).toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+
+      // Lista de Itens do Pedido
+      let itensHTML = "";
+      if (pedido.itens_pedido && pedido.itens_pedido.length > 0) {
+        itensHTML = pedido.itens_pedido.map(item => `
+          <div class="item-linha">
+            <span><strong>${item.quantidade}x</strong> ${escaparHTML(item.nome_produto)}</span>
+            <span>R$ ${Number(item.subtotal).toFixed(2)}</span>
+          </div>
+        `).join("");
+      }
+
+      // Detalhes de Endereço / Entrega
+      let enderecoHTML = "<strong>Retirada no Local</strong>";
+      if (pedido.tipo_pedido === "entrega") {
+        enderecoHTML = `
+          <strong>Entrega:</strong> ${escaparHTML(pedido.endereco || '')}, Nº ${escaparHTML(pedido.numero || '')}
+          ${pedido.complemento ? `(${escaparHTML(pedido.complemento)})` : ''}
+        `;
+      }
+
+      card.innerHTML = `
+        <div class="topo-card">
+          <h3>Pedido #${pedido.id}</h3>
+          <span class="badge-status">${pedido.status.replace("_", " ")} • ${dataFormatada}</span>
+        </div>
+
+        <div class="info-cliente">
+          <strong>Cliente:</strong> ${escaparHTML(pedido.nome_cliente)}<br>
+          <strong>Telefone:</strong> ${escaparHTML(pedido.telefone)}<br>
+          ${enderecoHTML}<br>
+          <strong>Pagamento:</strong> ${pedido.pagamento.toUpperCase()}<br>
+          ${pedido.observacao ? `<em>Obs: ${escaparHTML(pedido.observacao)}</em>` : ''}
+        </div>
+
+        <div class="itens-lista">
+          ${itensHTML}
+        </div>
+
+        <div class="total-pedido">
+          <span>Total</span>
+          <span>R$ ${Number(pedido.total).toFixed(2)}</span>
+        </div>
+
+        <div class="acoes-status">
+          ${gerarBotoesAcao(pedido.id, pedido.status)}
+        </div>
+      `;
+
+      grid.appendChild(card);
+    });
+  }
+
+  // Gera os botões de mudança de status
+  function gerarBotoesAcao(id, status) {
+    if (status === "recebido") {
+      return `
+        <button class="btn-acao btn-preparar" onclick="alterarStatus(${id}, 'preparando')">Iniciar Preparo</button>
+        <button class="btn-acao btn-cancelar" onclick="alterarStatus(${id}, 'cancelado')">Cancelar</button>
+      `;
+    }
+    if (status === "preparando") {
+      return `
+        <button class="btn-acao btn-pronto" onclick="alterarStatus(${id}, 'pronto')">Marcar Pronto</button>
+      `;
+    }
+    if (status === "pronto") {
+      return `
+        <button class="btn-acao btn-entregar" onclick="alterarStatus(${id}, 'saiu_entrega')">Saiu para Entrega</button>
+        <button class="btn-acao btn-concluir" onclick="alterarStatus(${id}, 'entregue')">Concluir (Retirado)</button>
+      `;
+    }
+    if (status === "saiu_entrega") {
+      return `
+        <button class="btn-acao btn-concluir" onclick="alterarStatus(${id}, 'entregue')">Marcar como Entregue</button>
+      `;
+    }
+    return `<small style="color:#777">Pedido Finalizado</small>`;
+  }
+
+  // Atualizar status no Supabase
+  async function alterarStatus(pedidoId, novoStatus) {
+    try {
+      await supabaseFetch(`pedidos?id=eq.${pedidoId}`, {
+        method: "PATCH",
+        body: JSON.stringify({ status: novoStatus })
+      });
+
+      const pedido = todosPedidos.find(p => p.id === pedidoId);
+      if (pedido) pedido.status = novoStatus;
+
+      renderizarPedidos();
+    } catch (err) {
+      alert("Erro ao alterar status: " + err.message);
+    }
+  }
+
+  // Filtro
+  function filtrarStatus(status, elemento) {
+    filtroAtual = status;
+    document.querySelectorAll(".btn-filtro").forEach(b => b.classList.remove("ativo"));
+    elemento.classList.add("ativo");
+    renderizarPedidos();
+  }
+
+  function escaparHTML(texto) {
+    return String(texto || "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;");
+  }
+
+  carregarPedidos();
+  setInterval(carregarPedidos, 10000);
+</script>
+
+</body>
+</html>

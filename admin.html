@@ -6,9 +6,7 @@
   <title>MenuFlow - Painel do Gestor</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -39,12 +37,42 @@
       color: white;
     }
 
+    /* Navegação Principal do Painel */
+    .nav-painel {
+      background: white;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      padding: 10px 0;
+    }
+
+    .btn-nav {
+      background: transparent;
+      border: none;
+      font-size: 15px;
+      font-weight: bold;
+      color: #666;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+
+    .btn-nav.ativo {
+      background: #111;
+      color: white;
+    }
+
     .container {
       max-width: 1100px;
       margin: 20px auto;
       padding: 0 16px;
     }
 
+    .secao-aba { display: none; }
+    .secao-aba.ativa { display: block; }
+
+    /* Estilos Pedidos */
     .filtros {
       display: flex;
       gap: 10px;
@@ -100,10 +128,7 @@
       border-bottom: 1px solid #eee;
     }
 
-    .topo-card h3 {
-      margin: 0;
-      font-size: 18px;
-    }
+    .topo-card h3 { margin: 0; font-size: 18px; }
 
     .badge-status {
       font-size: 11px;
@@ -135,9 +160,7 @@
       margin-bottom: 6px;
     }
 
-    .item-linha:last-child {
-      margin-bottom: 0;
-    }
+    .item-linha:last-child { margin-bottom: 0; }
 
     .total-pedido {
       font-size: 16px;
@@ -170,6 +193,124 @@
     .btn-concluir { background: #6c757d; }
     .btn-cancelar { background: #dc3545; color: white; }
 
+    /* Estilos Módulo de Cardápio */
+    .topo-cardapio {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .btn-add {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .tabela-produtos {
+      width: 100%;
+      background: white;
+      border-radius: 12px;
+      border-collapse: collapse;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+
+    .tabela-produtos th, .tabela-produtos td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    .tabela-produtos th {
+      background: #f1f3f5;
+      font-size: 13px;
+      color: #555;
+    }
+
+    .img-thumb {
+      width: 48px;
+      height: 48px;
+      border-radius: 6px;
+      object-fit: cover;
+      background: #eee;
+    }
+
+    .badge-ativo {
+      background: #d4edda;
+      color: #155724;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .badge-inativo {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background: white;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: bold;
+      margin-right: 4px;
+    }
+
+    .btn-sm:hover { background: #f0f0f0; }
+
+    /* Modal / Form */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-card {
+      background: white;
+      width: 100%;
+      max-width: 500px;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    .modal-card h2 { margin-top: 0; margin-bottom: 16px; font-size: 20px; }
+
+    .campo { margin-bottom: 14px; }
+    .campo label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; }
+    .campo input, .campo select, .campo textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .modal-acoes {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
     .vazio {
       text-align: center;
       padding: 40px;
@@ -181,27 +322,99 @@
 <body>
 
 <header>
-  <h1>MenuFlow — Gestor de Pedidos</h1>
+  <h1>MenuFlow — Gestor</h1>
   <span class="status-conexao" id="statusConexao">Ao vivo</span>
 </header>
 
+<nav class="nav-painel">
+  <button class="btn-nav ativo" onclick="trocarAba('pedidos', this)">📦 Pedidos</button>
+  <button class="btn-nav" onclick="trocarAba('cardapio', this)">🍔 Cardápio</button>
+</nav>
+
 <div class="container">
 
-  <!-- Filtros de Status -->
-  <div class="filtros">
-    <button class="btn-filtro ativo" onclick="filtrarStatus('todos', this)">Todos</button>
-    <button class="btn-filtro" onclick="filtrarStatus('recebido', this)">Recebidos</button>
-    <button class="btn-filtro" onclick="filtrarStatus('preparando', this)">Em Preparo</button>
-    <button class="btn-filtro" onclick="filtrarStatus('pronto', this)">Prontos</button>
-    <button class="btn-filtro" onclick="filtrarStatus('saiu_entrega', this)">Saiu p/ Entrega</button>
-    <button class="btn-filtro" onclick="filtrarStatus('entregue', this)">Entregues</button>
-  </div>
+  <!-- ABA 1: PEDIDOS -->
+  <section id="aba-pedidos" class="secao-aba ativa">
+    <div class="filtros">
+      <button class="btn-filtro ativo" onclick="filtrarStatus('todos', this)">Todos</button>
+      <button class="btn-filtro" onclick="filtrarStatus('recebido', this)">Recebidos</button>
+      <button class="btn-filtro" onclick="filtrarStatus('preparando', this)">Em Preparo</button>
+      <button class="btn-filtro" onclick="filtrarStatus('pronto', this)">Prontos</button>
+      <button class="btn-filtro" onclick="filtrarStatus('saiu_entrega', this)">Saiu p/ Entrega</button>
+      <button class="btn-filtro" onclick="filtrarStatus('entregue', this)">Entregues</button>
+    </div>
 
-  <!-- Lista de Pedidos -->
-  <div class="grid-pedidos" id="gridPedidos">
-    <div class="vazio">Carregando pedidos...</div>
-  </div>
+    <div class="grid-pedidos" id="gridPedidos">
+      <div class="vazio">Carregando pedidos...</div>
+    </div>
+  </section>
 
+  <!-- ABA 2: CARDÁPIO -->
+  <section id="aba-cardapio" class="secao-aba">
+    <div class="topo-cardapio">
+      <h2>Gerenciar Produtos</h2>
+      <button class="btn-add" onclick="abrirModalProduto()">+ Novo Produto</button>
+    </div>
+
+    <table class="tabela-produtos">
+      <thead>
+        <tr>
+          <th>Foto</th>
+          <th>Nome</th>
+          <th>Categoria</th>
+          <th>Preço</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="corpoTabelaProdutos">
+        <tr><td colspan="6" style="text-align:center;">Carregando produtos...</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</div>
+
+<!-- MODAL CADASTRAR / EDITAR PRODUTO -->
+<div class="modal-overlay" id="modalProduto">
+  <div class="modal-card">
+    <h2 id="modalTitulo">Novo Produto</h2>
+    <form id="formProduto" onsubmit="salvarProduto(event)">
+      <input type="hidden" id="prodId">
+
+      <div class="campo">
+        <label>Nome do Produto *</label>
+        <input type="text" id="prodNome" required placeholder="Ex: Cheeseburger Triplo">
+      </div>
+
+      <div class="campo">
+        <label>Categoria *</label>
+        <select id="prodCategoria" required>
+          <option value="">Carregando categorias...</option>
+        </select>
+      </div>
+
+      <div class="campo">
+        <label>Preço (R$) *</label>
+        <input type="number" step="0.01" id="prodPreco" required placeholder="29.90">
+      </div>
+
+      <div class="campo">
+        <label>URL da Imagem</label>
+        <input type="url" id="prodImagem" placeholder="https://exemplo.com/foto.jpg">
+      </div>
+
+      <div class="campo">
+        <label>Descrição</label>
+        <textarea id="prodDescricao" rows="3" placeholder="Ingredientes e detalhes..."></textarea>
+      </div>
+
+      <div class="modal-acoes">
+        <button type="button" class="btn-sm" onclick="fecharModalProduto()">Cancelar</button>
+        <button type="submit" class="btn-add">Salvar Produto</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <script>
@@ -210,9 +423,11 @@
   const ESTABELECIMENTO_ID = 1; // Burger House
 
   let todosPedidos = [];
+  let todosProdutos = [];
+  let todasCategorias = [];
   let filtroAtual = 'todos';
 
-  // Helper para requisições ao Supabase
+  // Helper de Requisições
   async function supabaseFetch(endpoint, options = {}) {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
       ...options,
@@ -233,23 +448,34 @@
     return text ? JSON.parse(text) : null;
   }
 
-  // Carregar todos os pedidos com seus itens
+  // --- NAVEGAÇÃO ENTRE ABAS ---
+  function trocarAba(aba, btn) {
+    document.querySelectorAll('.secao-aba').forEach(s => s.classList.remove('ativa'));
+    document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('ativo'));
+    
+    document.getElementById(`aba-${aba}`).classList.add('ativa');
+    btn.classList.add('ativo');
+
+    if (aba === 'cardapio') {
+      carregarCardapioAdmin();
+    }
+  }
+
+  // --- MÓDULO 1: PEDIDOS ---
   async function carregarPedidos() {
     try {
       const pedidos = await supabaseFetch(
         `pedidos?select=*,itens_pedido(*)&estabelecimento_id=eq.${ESTABELECIMENTO_ID}&order=id.desc`
       );
-
       todosPedidos = pedidos || [];
       renderizarPedidos();
     } catch (err) {
       console.error("Erro ao carregar pedidos:", err);
-      document.getElementById("statusConexao").textContent = "Erro na conexão";
+      document.getElementById("statusConexao").textContent = "Erro conexão";
       document.getElementById("statusConexao").style.background = "#dc3545";
     }
   }
 
-  // Renderizar cards na tela
   function renderizarPedidos() {
     const grid = document.getElementById("gridPedidos");
     grid.innerHTML = "";
@@ -268,11 +494,9 @@
       card.className = `card-pedido ${pedido.status}`;
 
       const dataFormatada = new Date(pedido.criado_em).toLocaleTimeString("pt-BR", {
-        hour: "2-digit",
-        minute: "2-digit"
+        hour: "2-digit", minute: "2-digit"
       });
 
-      // Lista de Itens do Pedido
       let itensHTML = "";
       if (pedido.itens_pedido && pedido.itens_pedido.length > 0) {
         itensHTML = pedido.itens_pedido.map(item => `
@@ -283,13 +507,9 @@
         `).join("");
       }
 
-      // Detalhes de Endereço / Entrega
       let enderecoHTML = "<strong>Retirada no Local</strong>";
       if (pedido.tipo_pedido === "entrega") {
-        enderecoHTML = `
-          <strong>Entrega:</strong> ${escaparHTML(pedido.endereco || '')}, Nº ${escaparHTML(pedido.numero || '')}
-          ${pedido.complemento ? `(${escaparHTML(pedido.complemento)})` : ''}
-        `;
+        enderecoHTML = `<strong>Entrega:</strong> ${escaparHTML(pedido.endereco || '')}, Nº ${escaparHTML(pedido.numero || '')}`;
       }
 
       card.innerHTML = `
@@ -297,86 +517,194 @@
           <h3>Pedido #${pedido.id}</h3>
           <span class="badge-status">${pedido.status.replace("_", " ")} • ${dataFormatada}</span>
         </div>
-
         <div class="info-cliente">
           <strong>Cliente:</strong> ${escaparHTML(pedido.nome_cliente)}<br>
-          <strong>Telefone:</strong> ${escaparHTML(pedido.telefone)}<br>
+          <strong>Tel:</strong> ${escaparHTML(pedido.telefone)}<br>
           ${enderecoHTML}<br>
-          <strong>Pagamento:</strong> ${pedido.pagamento.toUpperCase()}<br>
-          ${pedido.observacao ? `<em>Obs: ${escaparHTML(pedido.observacao)}</em>` : ''}
+          <strong>Pagamento:</strong> ${pedido.pagamento.toUpperCase()}
         </div>
-
-        <div class="itens-lista">
-          ${itensHTML}
-        </div>
-
-        <div class="total-pedido">
-          <span>Total</span>
-          <span>R$ ${Number(pedido.total).toFixed(2)}</span>
-        </div>
-
-        <div class="acoes-status">
-          ${gerarBotoesAcao(pedido.id, pedido.status)}
-        </div>
+        <div class="itens-lista">${itensHTML}</div>
+        <div class="total-pedido"><span>Total</span><span>R$ ${Number(pedido.total).toFixed(2)}</span></div>
+        <div class="acoes-status">${gerarBotoesAcao(pedido.id, pedido.status)}</div>
       `;
-
       grid.appendChild(card);
     });
   }
 
-  // Gera os botões de mudança de status
   function gerarBotoesAcao(id, status) {
     if (status === "recebido") {
-      return `
-        <button class="btn-acao btn-preparar" onclick="alterarStatus(${id}, 'preparando')">Iniciar Preparo</button>
-        <button class="btn-acao btn-cancelar" onclick="alterarStatus(${id}, 'cancelado')">Cancelar</button>
-      `;
+      return `<button class="btn-acao btn-preparar" onclick="alterarStatus(${id}, 'preparando')">Iniciar Preparo</button>
+              <button class="btn-acao btn-cancelar" onclick="alterarStatus(${id}, 'cancelado')">Cancelar</button>`;
     }
     if (status === "preparando") {
-      return `
-        <button class="btn-acao btn-pronto" onclick="alterarStatus(${id}, 'pronto')">Marcar Pronto</button>
-      `;
+      return `<button class="btn-acao btn-pronto" onclick="alterarStatus(${id}, 'pronto')">Marcar Pronto</button>`;
     }
     if (status === "pronto") {
-      return `
-        <button class="btn-acao btn-entregar" onclick="alterarStatus(${id}, 'saiu_entrega')">Saiu para Entrega</button>
-        <button class="btn-acao btn-concluir" onclick="alterarStatus(${id}, 'entregue')">Concluir (Retirado)</button>
-      `;
+      return `<button class="btn-acao btn-entregar" onclick="alterarStatus(${id}, 'saiu_entrega')">Saiu p/ Entrega</button>
+              <button class="btn-acao btn-concluir" onclick="alterarStatus(${id}, 'entregue')">Concluir</button>`;
     }
     if (status === "saiu_entrega") {
-      return `
-        <button class="btn-acao btn-concluir" onclick="alterarStatus(${id}, 'entregue')">Marcar como Entregue</button>
-      `;
+      return `<button class="btn-acao btn-concluir" onclick="alterarStatus(${id}, 'entregue')">Entregue</button>`;
     }
-    return `<small style="color:#777">Pedido Finalizado</small>`;
+    return `<small style="color:#777">Finalizado</small>`;
   }
 
-  // Atualizar status no Supabase
   async function alterarStatus(pedidoId, novoStatus) {
     try {
       await supabaseFetch(`pedidos?id=eq.${pedidoId}`, {
         method: "PATCH",
         body: JSON.stringify({ status: novoStatus })
       });
-
-      const pedido = todosPedidos.find(p => p.id === pedidoId);
-      if (pedido) pedido.status = novoStatus;
-
+      const p = todosPedidos.find(x => x.id === pedidoId);
+      if (p) p.status = novoStatus;
       renderizarPedidos();
-    } catch (err) {
-      alert("Erro ao alterar status: " + err.message);
-    }
+    } catch (err) { alert("Erro ao alterar status: " + err.message); }
   }
 
-  // Filtro
-  function filtrarStatus(status, elemento) {
+  function filtrarStatus(status, el) {
     filtroAtual = status;
     document.querySelectorAll(".btn-filtro").forEach(b => b.classList.remove("ativo"));
-    elemento.classList.add("ativo");
+    el.classList.add("ativo");
     renderizarPedidos();
   }
 
-  function escaparHTML(texto) {
+  // --- MÓDULO 2: CARDÁPIO (PRODUTOS) ---
+  async function carregarCardapioAdmin() {
+    try {
+      // Carrega Produtos e Categorias
+      const [prods, cats] = await Promise.all([
+        supabaseFetch(`produtos?estabelecimento_id=eq.${ESTABELECIMENTO_ID}&order=id.asc`),
+        supabaseFetch(`categorias?estabelecimento_id=eq.${ESTABELECIMENTO_ID}&order=ordem.asc`)
+      ]);
+
+      todosProdutos = prods || [];
+      todasCategorias = cats || [];
+
+      // Preenche select de categorias no modal
+      const selectCat = document.getElementById("prodCategoria");
+      selectCat.innerHTML = todasCategorias.map(c => `<option value="${c.id}">${escaparHTML(c.nome)}</option>`).join("");
+
+      renderizarTabelaProdutos();
+    } catch (err) {
+      alert("Erro ao carregar cardápio: " + err.message);
+    }
+  }
+
+  function renderizarTabelaProdutos() {
+    const tbody = document.getElementById("corpoTabelaProdutos");
+    if (todosProdutos.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Nenhum produto cadastrado.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = todosProdutos.map(p => {
+      const cat = todasCategorias.find(c => c.id === p.categoria_id);
+      const imagemUrl = p.imagem_url || 'https://via.placeholder.com/48?text=Sem+Foto';
+      const estaAtivo = p.ativo !== false;
+
+      return `
+        <tr>
+          <td><img src="${imagemUrl}" class="img-thumb" alt="Foto"></td>
+          <td><strong>${escaparHTML(p.nome)}</strong></td>
+          <td>${cat ? escapingHTML(cat.nome) : 'Geral'}</td>
+          <td>R$ ${Number(p.preco).toFixed(2)}</td>
+          <td>
+            <span class="${estaAtivo ? 'badge-ativo' : 'badge-inativo'}">
+              ${estaAtivo ? 'Disponível' : 'Pausado'}
+            </span>
+          </td>
+          <td>
+            <button class="btn-sm" onclick="toggleStatusProduto(${p.id}, ${!estaAtivo})">
+              ${estaAtivo ? 'Pausar' : 'Ativar'}
+            </button>
+            <button class="btn-sm" onclick="editarProduto(${p.id})">Editar</button>
+          </td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  // Alternar produto entre Disponível e Pausado
+  async function toggleStatusProduto(id, novoStatus) {
+    try {
+      await supabaseFetch(`produtos?id=eq.${id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ ativo: novoStatus })
+      });
+      const prod = todosProdutos.find(p => p.id === id);
+      if (prod) prod.ativo = novoStatus;
+      renderizarTabelaProdutos();
+    } catch (err) {
+      alert("Erro ao alterar produto: " + err.message);
+    }
+  }
+
+  // Modal Novo / Editar
+  function abrirModalProduto() {
+    document.getElementById("modalTitulo").textContent = "Novo Produto";
+    document.getElementById("formProduto").reset();
+    document.getElementById("prodId").value = "";
+    document.getElementById("modalProduto").style.display = "flex";
+  }
+
+  function fecharModalProduto() {
+    document.getElementById("modalProduto").style.display = "none";
+  }
+
+  function editarProduto(id) {
+    const prod = todosProdutos.find(p => p.id === id);
+    if (!prod) return;
+
+    document.getElementById("modalTitulo").textContent = "Editar Produto";
+    document.getElementById("prodId").value = prod.id;
+    document.getElementById("prodNome").value = prod.nome;
+    document.getElementById("prodCategoria").value = prod.categoria_id;
+    document.getElementById("prodPreco").value = prod.preco;
+    document.getElementById("prodImagem").value = prod.imagem_url || "";
+    document.getElementById("prodDescricao").value = prod.descricao || "";
+
+    document.getElementById("modalProduto").style.display = "flex";
+  }
+
+  async function salvarProduto(e) {
+    e.preventDefault();
+
+    const id = document.getElementById("prodId").value;
+    const dados = {
+      estabelecimento_id: ESTABELECIMENTO_ID,
+      nome: document.getElementById("prodNome").value,
+      categoria_id: Number(document.getElementById("prodCategoria").value),
+      preco: parseFloat(document.getElementById("prodPreco").value),
+      imagem_url: document.getElementById("prodImagem").value || null,
+      descricao: document.getElementById("prodDescricao").value || null,
+      ativo: true
+    };
+
+    try {
+      if (id) {
+        // UPDATE
+        await supabaseFetch(`produtos?id=eq.${id}`, {
+          method: "PATCH",
+          body: JSON.stringify(dados)
+        });
+      } else {
+        // INSERT
+        await supabaseFetch("produtos", {
+          method: "POST",
+          body: JSON.stringify(dados)
+        });
+      }
+
+      fecharModalProduto();
+      carregarCardapioAdmin();
+    } catch (err) {
+      alert("Erro ao salvar produto: " + err.message);
+    }
+  }
+
+  function escapingHTML(texto) { return escapingHTML_internal(texto); }
+  function escaparHTML(texto) { return escapingHTML_internal(texto); }
+  function escapingHTML_internal(texto) {
     return String(texto || "")
       .replaceAll("&", "&amp;")
       .replaceAll("<", "&lt;")
@@ -384,6 +712,7 @@
       .replaceAll('"', "&quot;");
   }
 
+  // Inicialização
   carregarPedidos();
   setInterval(carregarPedidos, 10000);
 </script>

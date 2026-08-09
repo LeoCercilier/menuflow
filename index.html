@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>MenuFlow - Burger House</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      color: #222;
+    }
+
+    header {
+      background: #111;
+      color: white;
+      padding: 24px 16px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+
+    header p {
+      margin: 0;
+      color: #ccc;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      padding: 20px 16px 40px;
+    }
+
+    .status {
+      background: white;
+      padding: 14px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .categoria {
+      margin-bottom: 28px;
+    }
+
+    .categoria h2 {
+      font-size: 22px;
+      margin-bottom: 12px;
+    }
+
+    .produto {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .produto-info {
+      flex: 1;
+    }
+
+    .produto h3 {
+      margin: 0 0 6px;
+      font-size: 18px;
+    }
+
+    .produto p {
+      margin: 0 0 8px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .preco {
+      font-weight: bold;
+      font-size: 17px;
+    }
+
+    .btn {
+      border: none;
+      background: #111;
+      color: white;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn:hover {
+      opacity: 0.85;
+    }
+
+    .erro {
+      color: #b00020;
+      background: #ffe5e5;
+    }
+
+    .vazio {
+      text-align: center;
+      padding: 30px 10px;
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1 id="nomeEstabelecimento">MenuFlow</h1>
+  <p id="descricaoEstabelecimento">Carregando...</p>
+</header>
+
+<div class="container">
+
+  <div id="status" class="status">
+    Carregando cardápio...
+  </div>
+
+  <main id="cardapio"></main>
+
+</div>
+
+<script>
+
+  // =====================================================
+  // CONFIGURAÇÃO DO SUPABASE
+  // =====================================================
+
+  const SUPABASE_URL = "https://onrgwxghqcnvmybyqmmj.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_OzQryJ6i5VGOxhFr6DR-iw_b73GHKnQ";
+const SLUG = "burger-house";
+
+
+  // =====================================================
+  // FUNÇÃO BASE PARA CONSULTAR O SUPABASE
+  // =====================================================
+
+  async function supabaseFetch(endpoint) {
+
+    const resposta = await fetch(
+      SUPABASE_URL + "/rest/v1/" + endpoint,
+      {
+        method: "GET",
+        headers: {
+          "apikey": SUPABASE_ANON_KEY,
+          "Authorization": "Bearer " + SUPABASE_ANON_KEY,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+    if (!resposta.ok) {
+
+      const erro = await resposta.text();
+
+      throw new Error(
+        "Supabase " +
+        resposta.status +
+        ": " +
+        erro
+      );
+    }
+
+    return await resposta.json();
+  }
+
+
+  // =====================================================
+  // CARREGAR CARDÁPIO
+  // =====================================================
+
+  async function carregarCardapio() {
+
+    const status = document.getElementById("status");
+    const cardapio = document.getElementById("cardapio");
+
+    try {
+
+      status.className = "status";
+      status.textContent = "Carregando cardápio...";
+
+
+      // -----------------------------------------------
+      // 1. ESTABELECIMENTO
+      // -----------------------------------------------
+
+      const estabelecimentos = await supabaseFetch(
+        "estabelecimentos" +
+        "?select=*" +
+        "&slug=eq." + encodeURIComponent(SLUG) +
+        "&ativo=eq.true"
+      );
+
+
+      if (!estabelecimentos.length) {
+
+        throw new Error(
+          "Estabelecimento não encontrado."
+        );
+      }
+
+
+      const estabelecimento = estabelecimentos[0];
+
+
+      document.getElementById(
+        "nomeEstabelecimento"
+      ).textContent = estabelecimento.nome;
+
+
+      document.getElementById(
+        "descricaoEstabelecimento"
+      ).textContent =
+        estabelecimento.descricao || "";
+
+
+      // -----------------------------------------------
+      // 2. CATEGORIAS
+      // -----------------------------------------------
+
+      const categorias = await supabaseFetch(
+        "categorias" +
+        "?select=*" +
+        "&estabelecimento_id=eq." +
+        estabelecimento.id +
+        "&ativo=eq.true" +
+        "&order=ordem.asc"
+      );
+
+
+      // -----------------------------------------------
+      // 3. PRODUTOS
+      // -----------------------------------------------
+
+      const produtos = await supabaseFetch(
+        "produtos" +
+        "?select=*" +
+        "&estabelecimento_id=eq." +
+        estabelecimento.id +
+        "&ativo=eq.true" +
+        "&order=ordem.asc"
+      );
+
+
+      cardapio.innerHTML = "";
+
+
+      if (!categorias.length) {
+
+        cardapio.innerHTML =
+          '<div class="vazio">' +
+          'Nenhuma categoria encontrada.' +
+          '</div>';
+
+        status.textContent =
+          "Cardápio carregado.";
+
+        return;
+      }
+
+
+      // -----------------------------------------------
+      // 4. MONTAR CARDÁPIO
+      // -----------------------------------------------
+
+      categorias.forEach(categoria => {
+
+        const produtosCategoria =
+          produtos.filter(
+            produto =>
+              produto.categoria_id === categoria.id
+          );
+
+
+        if (!produtosCategoria.length) {
+          return;
+        }
+
+
+        const secao =
+          document.createElement("section");
+
+        secao.className = "categoria";
+
+
+        const titulo =
+          document.createElement("h2");
+
+        titulo.textContent =
+          categoria.nome;
+
+
+        secao.appendChild(titulo);
+
+
+        produtosCategoria.forEach(produto => {
+
+          const card =
+            document.createElement("div");
+
+          card.className = "produto";
+
+
+          const info =
+            document.createElement("div");
+
+          info.className = "produto-info";
+
+
+          const nome =
+            document.createElement("h3");
+
+          nome.textContent =
+            produto.nome;
+
+
+          const descricao =
+            document.createElement("p");
+
+          descricao.textContent =
+            produto.descricao || "";
+
+
+          const preco =
+            document.createElement("div");
+
+          preco.className = "preco";
+
+          preco.textContent =
+            formatarPreco(produto.preco);
+
+
+          info.appendChild(nome);
+          info.appendChild(descricao);
+          info.appendChild(preco);
+
+
+          const botao =
+            document.createElement("button");
+
+          botao.className = "btn";
+
+          botao.textContent =
+            "Adicionar";
+
+
+          botao.onclick = function() {
+
+            alert(
+              produto.nome +
+              " selecionado!"
+            );
+
+          };
+
+
+          card.appendChild(info);
+          card.appendChild(botao);
+
+
+          secao.appendChild(card);
+
+        });
+
+
+        cardapio.appendChild(secao);
+
+      });
+
+
+      status.textContent =
+        "Cardápio carregado com sucesso!";
+
+
+    } catch (erro) {
+
+      console.error(
+        "Erro ao carregar cardápio:",
+        erro
+      );
+
+
+      status.className =
+        "status erro";
+
+
+      status.textContent =
+        "Erro ao carregar o cardápio: " +
+        erro.message;
+
+    }
+
+  }
+
+
+  // =====================================================
+  // FORMATAR PREÇO
+  // =====================================================
+
+  function formatarPreco(valor) {
+
+    return Number(valor).toLocaleString(
+      "pt-BR",
+      {
+        style: "currency",
+        currency: "BRL"
+      }
+    );
+
+  }
+
+
+  // =====================================================
+  // INICIAR
+  // =====================================================
+
+  carregarCardapio();
+
+</script>
+
+</body>
+</html>

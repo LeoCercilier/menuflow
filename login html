@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Gestão do Estabelecimento</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: #f4f6f9; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .card-login { background: #ffffff; padding: 2.5rem; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); width: 100%; max-width: 400px; }
+    .card-login h2 { text-align: center; margin-bottom: 1.5rem; color: #333; }
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label { display: block; margin-bottom: 0.4rem; font-weight: 600; color: #555; }
+    .form-group input { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
+    .btn-login { width: 100%; padding: 0.85rem; background-color: #2563eb; color: #fff; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+    .btn-login:hover { background-color: #1d4ed8; }
+    .erro-msg { color: #dc2626; background: #fee2e2; padding: 0.6rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.9rem; display: none; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <div class="card-login">
+    <h2>Acesso ao Painel</h2>
+    
+    <div id="msgErro" class="erro-msg"></div>
+
+    <form id="formLogin">
+      <div class="form-group">
+        <label for="email">E-mail do Estabelecimento</label>
+        <input type="email" id="email" required placeholder="seu@email.com">
+      </div>
+
+      <div class="form-group">
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" required placeholder="******">
+      </div>
+
+      <button type="submit" class="btn-login" id="btnSubmit">Entrar</button>
+    </form>
+  </div>
+
+  <script>
+    // Configuração do Supabase (Coloque suas credenciais aqui)
+    const SUPABASE_URL = 'https://onrgwxghqcnvmybyqmmj.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ucmd3eGdocWNudm15YnlxbW1qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYyODY2MDksImV4cCI6MjEwMTg2MjYwOX0.JvrkPe6M3pgcvDNNvXdXd7JAw8DeeI__tUsdUfFBAXQ';
+
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const formLogin = document.getElementById('formLogin');
+    const msgErro = document.getElementById('msgErro');
+    const btnSubmit = document.getElementById('btnSubmit');
+
+    formLogin.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      msgErro.style.display = 'none';
+      btnSubmit.innerText = 'Entrando...';
+      btnSubmit.disabled = true;
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('senha').value;
+
+      try {
+        // 1. Tenta autenticar o usuário no Supabase
+        const { data: authData, error: authError } = await _supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (authError) throw authError;
+
+        // 2. Busca o estabelecimento associado a este usuário
+        const { data: estabData, error: estabError } = await _supabase
+          .from('estabelecimentos')
+          .select('id, nome, slug')
+          .eq('user_id', authData.user.id)
+          .single();
+
+        if (estabError || !estabData) {
+          throw new Error('Nenhum estabelecimento encontrado vinculado a esta conta de usuário.');
+        }
+
+        // 3. Salva os dados do estabelecimento na sessão
+        localStorage.setItem('estabelecimento_id', estabData.id);
+        localStorage.setItem('estabelecimento_nome', estabData.nome);
+
+        // 4. Redireciona para o painel administrativo
+        window.location.href = 'admin.html';
+
+      } catch (err) {
+        msgErro.innerText = err.message || 'Erro ao realizar login.';
+        msgErro.style.display = 'block';
+      } finally {
+        btnSubmit.innerText = 'Entrar';
+        btnSubmit.disabled = false;
+      }
+    });
+  </script>
+
+</body>
+</html>
+

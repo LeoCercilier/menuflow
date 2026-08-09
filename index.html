@@ -18,16 +18,27 @@
       color: #222;
     }
 
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
     header {
       background: #111;
       color: white;
-      padding: 24px 16px;
+      padding: 28px 16px;
       text-align: center;
     }
 
     header h1 {
       margin: 0 0 8px;
-      font-size: 28px;
+      font-size: 30px;
     }
 
     header p {
@@ -36,39 +47,45 @@
     }
 
     .container {
-      max-width: 700px;
+      width: 100%;
+      max-width: 760px;
       margin: auto;
-      padding: 20px 16px 40px;
+      padding: 20px 16px 110px;
     }
 
     .status {
       background: white;
       padding: 14px;
-      border-radius: 10px;
-      margin-bottom: 20px;
+      border-radius: 12px;
+      margin-bottom: 22px;
       text-align: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+
+    .status.erro {
+      background: #ffe5e5;
+      color: #a00000;
     }
 
     .categoria {
-      margin-bottom: 28px;
+      margin-bottom: 30px;
     }
 
     .categoria h2 {
-      font-size: 22px;
-      margin-bottom: 12px;
+      margin: 0 0 14px;
+      font-size: 23px;
     }
 
     .produto {
       background: white;
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 16px;
       margin-bottom: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       gap: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
     }
 
     .produto-info {
@@ -81,39 +98,245 @@
     }
 
     .produto p {
-      margin: 0 0 8px;
+      margin: 0 0 9px;
       color: #666;
       font-size: 14px;
+      line-height: 1.4;
     }
 
     .preco {
-      font-weight: bold;
       font-size: 17px;
+      font-weight: bold;
     }
 
     .btn {
-      border: none;
+      border: 0;
+      border-radius: 9px;
+      padding: 10px 14px;
       background: #111;
       color: white;
-      padding: 10px 14px;
-      border-radius: 8px;
-      cursor: pointer;
       font-weight: bold;
     }
 
-    .btn:hover {
-      opacity: 0.85;
+    .btn:active {
+      transform: scale(.98);
     }
 
-    .erro {
-      color: #b00020;
-      background: #ffe5e5;
+    .btn-secundario {
+      background: #eee;
+      color: #222;
+    }
+
+    .btn-verde {
+      background: #16833b;
+    }
+
+    .carrinho-flutuante {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: white;
+      padding: 12px 16px;
+      box-shadow: 0 -3px 15px rgba(0,0,0,.12);
+      z-index: 20;
+    }
+
+    .carrinho-barra {
+      max-width: 760px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .carrinho-resumo {
+      font-weight: bold;
+    }
+
+    .carrinho-resumo small {
+      display: block;
+      color: #666;
+      font-weight: normal;
+      margin-top: 3px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.55);
+      z-index: 100;
+      padding: 16px;
+      overflow-y: auto;
+    }
+
+    .modal.aberto {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .modal-conteudo {
+      width: 100%;
+      max-width: 620px;
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+
+    .modal-topo {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .modal-topo h2 {
+      margin: 0;
+    }
+
+    .fechar {
+      border: 0;
+      background: #eee;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      font-size: 20px;
+    }
+
+    .item-carrinho {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 13px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .item-info {
+      flex: 1;
+    }
+
+    .item-info strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .item-info small {
+      color: #666;
+    }
+
+    .quantidade {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .quantidade button {
+      width: 32px;
+      height: 32px;
+      border: 0;
+      border-radius: 7px;
+      background: #eee;
+      font-weight: bold;
+    }
+
+    .total-box {
+      padding: 18px 0;
+      display: flex;
+      justify-content: space-between;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .form-grupo {
+      margin-bottom: 15px;
+    }
+
+    .form-grupo label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    .form-grupo input,
+    .form-grupo select,
+    .form-grupo textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 9px;
+      background: white;
+    }
+
+    .form-grupo textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .linha {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .linha-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+
+    .oculto {
+      display: none !important;
+    }
+
+    .mensagem-sucesso {
+      text-align: center;
+      padding: 20px 5px;
+    }
+
+    .mensagem-sucesso .icone {
+      font-size: 55px;
+      margin-bottom: 10px;
+    }
+
+    .mensagem-sucesso h2 {
+      margin-bottom: 8px;
+    }
+
+    .mensagem-sucesso p {
+      color: #666;
+      line-height: 1.5;
     }
 
     .vazio {
       text-align: center;
-      padding: 30px 10px;
       color: #666;
+      padding: 30px 10px;
+    }
+
+    @media (max-width: 500px) {
+
+      .produto {
+        align-items: flex-start;
+      }
+
+      .produto .btn {
+        white-space: nowrap;
+      }
+
+      .linha,
+      .linha-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .modal-conteudo {
+        margin: 5px 0;
+      }
     }
   </style>
 </head>
@@ -122,7 +345,7 @@
 
 <header>
   <h1 id="nomeEstabelecimento">MenuFlow</h1>
-  <p id="descricaoEstabelecimento">Carregando...</p>
+  <p id="descricaoEstabelecimento">Carregando cardápio...</p>
 </header>
 
 <div class="container">
@@ -135,34 +358,372 @@
 
 </div>
 
+
+<!-- =====================================================
+     BARRA DO CARRINHO
+===================================================== -->
+
+<div class="carrinho-flutuante">
+
+  <div class="carrinho-barra">
+
+    <div class="carrinho-resumo">
+      <span id="quantidadeCarrinho">0 itens</span>
+      <small id="totalCarrinho">R$ 0,00</small>
+    </div>
+
+    <button
+      class="btn"
+      onclick="abrirCarrinho()"
+    >
+      Ver carrinho
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     MODAL CARRINHO
+===================================================== -->
+
+<div
+  id="modalCarrinho"
+  class="modal"
+>
+
+  <div class="modal-conteudo">
+
+    <div class="modal-topo">
+
+      <h2>Seu carrinho</h2>
+
+      <button
+        class="fechar"
+        onclick="fecharModal('modalCarrinho')"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div id="listaCarrinho"></div>
+
+    <div class="total-box">
+      <span>Total</span>
+      <span id="totalModal">R$ 0,00</span>
+    </div>
+
+    <button
+      id="btnCheckout"
+      class="btn btn-verde"
+      style="width:100%"
+      onclick="abrirCheckout()"
+    >
+      Continuar pedido
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     MODAL CHECKOUT
+===================================================== -->
+
+<div
+  id="modalCheckout"
+  class="modal"
+>
+
+  <div class="modal-conteudo">
+
+    <div class="modal-topo">
+
+      <h2>Finalizar pedido</h2>
+
+      <button
+        class="fechar"
+        onclick="fecharModal('modalCheckout')"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <form id="formPedido">
+
+      <div class="form-grupo">
+
+        <label for="nomeCliente">
+          Nome
+        </label>
+
+        <input
+          id="nomeCliente"
+          type="text"
+          placeholder="Seu nome"
+          required
+        >
+
+      </div>
+
+
+      <div class="form-grupo">
+
+        <label for="telefone">
+          Telefone
+        </label>
+
+        <input
+          id="telefone"
+          type="tel"
+          placeholder="(21) 99999-9999"
+          required
+        >
+
+      </div>
+
+
+      <div class="form-grupo">
+
+        <label for="tipoPedido">
+          Tipo do pedido
+        </label>
+
+        <select
+          id="tipoPedido"
+          onchange="alterarTipoPedido()"
+          required
+        >
+
+          <option value="retirada">
+            Retirada
+          </option>
+
+          <option value="entrega">
+            Entrega
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div id="enderecoArea" class="oculto">
+
+        <div class="form-grupo">
+
+          <label for="endereco">
+            Endereço
+          </label>
+
+          <input
+            id="endereco"
+            type="text"
+            placeholder="Rua / Avenida"
+          >
+
+        </div>
+
+
+        <div class="linha">
+
+          <div class="form-grupo">
+
+            <label for="numero">
+              Número
+            </label>
+
+            <input
+              id="numero"
+              type="text"
+              placeholder="123"
+            >
+
+          </div>
+
+          <div class="form-grupo">
+
+            <label for="complemento">
+              Complemento
+            </label>
+
+            <input
+              id="complemento"
+              type="text"
+              placeholder="Casa, apto..."
+            >
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="form-grupo">
+
+        <label for="pagamento">
+          Forma de pagamento
+        </label>
+
+        <select
+          id="pagamento"
+          required
+        >
+
+          <option value="">
+            Selecione
+          </option>
+
+          <option value="pix">
+            Pix
+          </option>
+
+          <option value="dinheiro">
+            Dinheiro
+          </option>
+
+          <option value="cartao">
+            Cartão
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="form-grupo">
+
+        <label for="observacao">
+          Observação
+        </label>
+
+        <textarea
+          id="observacao"
+          placeholder="Alguma observação sobre o pedido?"
+        ></textarea>
+
+      </div>
+
+
+      <div class="total-box">
+
+        <span>Total</span>
+
+        <span id="totalCheckout">
+          R$ 0,00
+        </span>
+
+      </div>
+
+
+      <button
+        type="submit"
+        id="btnConfirmar"
+        class="btn btn-verde"
+        style="width:100%"
+      >
+        Confirmar pedido
+      </button>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     MODAL SUCESSO
+===================================================== -->
+
+<div
+  id="modalSucesso"
+  class="modal"
+>
+
+  <div class="modal-conteudo">
+
+    <div class="mensagem-sucesso">
+
+      <div class="icone">✅</div>
+
+      <h2>Pedido enviado!</h2>
+
+      <p id="mensagemPedido">
+        Seu pedido foi recebido com sucesso.
+      </p>
+
+      <button
+        class="btn"
+        onclick="novoPedido()"
+        style="margin-top:15px"
+      >
+        Fazer novo pedido
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
 <script>
 
   // =====================================================
-  // CONFIGURAÇÃO DO SUPABASE
+  // CONFIGURAÇÃO
   // =====================================================
 
-  const SUPABASE_URL = "https://onrgwxghqcnvmybyqmmj.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_OzQryJ6i5VGOxhFr6DR-iw_b73GHKnQ";
-const SLUG = "burger-house";
+  const SUPABASE_URL =
+    "https://onrgwxghqcnvmybyqmmj.supabase.co";
+
+  const SUPABASE_ANON_KEY =
+    "sb_publishable_OzQryJ6i5VGOxhFr6DR-iw_b73GHKnQ";
+
+  const SLUG = "burger-house";
 
 
   // =====================================================
-  // FUNÇÃO BASE PARA CONSULTAR O SUPABASE
+  // ESTADO DO APLICATIVO
   // =====================================================
 
-  async function supabaseFetch(endpoint) {
+  let estabelecimento = null;
+
+  let categorias = [];
+
+  let produtos = [];
+
+  let carrinho = [];
+
+
+  // =====================================================
+  // CONSULTA SUPABASE
+  // =====================================================
+
+  async function supabaseFetch(endpoint, options = {}) {
 
     const resposta = await fetch(
       SUPABASE_URL + "/rest/v1/" + endpoint,
       {
-        method: "GET",
+        ...options,
+
         headers: {
           "apikey": SUPABASE_ANON_KEY,
-          "Authorization": "Bearer " + SUPABASE_ANON_KEY,
-          "Content-Type": "application/json"
+          "Authorization":
+            "Bearer " + SUPABASE_ANON_KEY,
+          "Content-Type": "application/json",
+
+          ...(options.headers || {})
         }
       }
     );
+
 
     if (!resposta.ok) {
 
@@ -174,9 +735,27 @@ const SLUG = "burger-house";
         ": " +
         erro
       );
+
     }
 
-    return await resposta.json();
+
+    const texto = await resposta.text();
+
+    if (!texto) {
+      return null;
+    }
+
+
+    try {
+
+      return JSON.parse(texto);
+
+    } catch {
+
+      return texto;
+
+    }
+
   }
 
 
@@ -186,41 +765,56 @@ const SLUG = "burger-house";
 
   async function carregarCardapio() {
 
-    const status = document.getElementById("status");
-    const cardapio = document.getElementById("cardapio");
+    const status =
+      document.getElementById("status");
+
+    const cardapio =
+      document.getElementById("cardapio");
+
 
     try {
 
       status.className = "status";
-      status.textContent = "Carregando cardápio...";
+
+      status.textContent =
+        "Carregando cardápio...";
 
 
       // -----------------------------------------------
-      // 1. ESTABELECIMENTO
+      // ESTABELECIMENTO
       // -----------------------------------------------
 
-      const estabelecimentos = await supabaseFetch(
-        "estabelecimentos" +
-        "?select=*" +
-        "&slug=eq." + encodeURIComponent(SLUG) +
-        "&ativo=eq.true"
-      );
+      const estabelecimentos =
+        await supabaseFetch(
+          "estabelecimentos" +
+          "?select=*" +
+          "&slug=eq." +
+          encodeURIComponent(SLUG) +
+          "&ativo=eq.true" +
+          "&limit=1"
+        );
 
 
-      if (!estabelecimentos.length) {
+      if (
+        !estabelecimentos ||
+        !estabelecimentos.length
+      ) {
 
         throw new Error(
           "Estabelecimento não encontrado."
         );
+
       }
 
 
-      const estabelecimento = estabelecimentos[0];
+      estabelecimento =
+        estabelecimentos[0];
 
 
       document.getElementById(
         "nomeEstabelecimento"
-      ).textContent = estabelecimento.nome;
+      ).textContent =
+        estabelecimento.nome;
 
 
       document.getElementById(
@@ -230,157 +824,36 @@ const SLUG = "burger-house";
 
 
       // -----------------------------------------------
-      // 2. CATEGORIAS
+      // CATEGORIAS
       // -----------------------------------------------
 
-      const categorias = await supabaseFetch(
-        "categorias" +
-        "?select=*" +
-        "&estabelecimento_id=eq." +
-        estabelecimento.id +
-        "&ativo=eq.true" +
-        "&order=ordem.asc"
-      );
-
-
-      // -----------------------------------------------
-      // 3. PRODUTOS
-      // -----------------------------------------------
-
-      const produtos = await supabaseFetch(
-        "produtos" +
-        "?select=*" +
-        "&estabelecimento_id=eq." +
-        estabelecimento.id +
-        "&ativo=eq.true" +
-        "&order=ordem.asc"
-      );
-
-
-      cardapio.innerHTML = "";
-
-
-      if (!categorias.length) {
-
-        cardapio.innerHTML =
-          '<div class="vazio">' +
-          'Nenhuma categoria encontrada.' +
-          '</div>';
-
-        status.textContent =
-          "Cardápio carregado.";
-
-        return;
-      }
+      categorias =
+        await supabaseFetch(
+          "categorias" +
+          "?select=*" +
+          "&estabelecimento_id=eq." +
+          estabelecimento.id +
+          "&ativo=eq.true" +
+          "&order=ordem.asc"
+        );
 
 
       // -----------------------------------------------
-      // 4. MONTAR CARDÁPIO
+      // PRODUTOS
       // -----------------------------------------------
 
-      categorias.forEach(categoria => {
-
-        const produtosCategoria =
-          produtos.filter(
-            produto =>
-              produto.categoria_id === categoria.id
-          );
-
-
-        if (!produtosCategoria.length) {
-          return;
-        }
+      produtos =
+        await supabaseFetch(
+          "produtos" +
+          "?select=*" +
+          "&estabelecimento_id=eq." +
+          estabelecimento.id +
+          "&ativo=eq.true" +
+          "&order=ordem.asc"
+        );
 
 
-        const secao =
-          document.createElement("section");
-
-        secao.className = "categoria";
-
-
-        const titulo =
-          document.createElement("h2");
-
-        titulo.textContent =
-          categoria.nome;
-
-
-        secao.appendChild(titulo);
-
-
-        produtosCategoria.forEach(produto => {
-
-          const card =
-            document.createElement("div");
-
-          card.className = "produto";
-
-
-          const info =
-            document.createElement("div");
-
-          info.className = "produto-info";
-
-
-          const nome =
-            document.createElement("h3");
-
-          nome.textContent =
-            produto.nome;
-
-
-          const descricao =
-            document.createElement("p");
-
-          descricao.textContent =
-            produto.descricao || "";
-
-
-          const preco =
-            document.createElement("div");
-
-          preco.className = "preco";
-
-          preco.textContent =
-            formatarPreco(produto.preco);
-
-
-          info.appendChild(nome);
-          info.appendChild(descricao);
-          info.appendChild(preco);
-
-
-          const botao =
-            document.createElement("button");
-
-          botao.className = "btn";
-
-          botao.textContent =
-            "Adicionar";
-
-
-          botao.onclick = function() {
-
-            alert(
-              produto.nome +
-              " selecionado!"
-            );
-
-          };
-
-
-          card.appendChild(info);
-          card.appendChild(botao);
-
-
-          secao.appendChild(card);
-
-        });
-
-
-        cardapio.appendChild(secao);
-
-      });
+      montarCardapio();
 
 
       status.textContent =
@@ -409,7 +882,907 @@ const SLUG = "burger-house";
 
 
   // =====================================================
-  // FORMATAR PREÇO
+  // MONTAR CARDÁPIO
+  // =====================================================
+
+  function montarCardapio() {
+
+    const cardapio =
+      document.getElementById("cardapio");
+
+
+    cardapio.innerHTML = "";
+
+
+    categorias.forEach(categoria => {
+
+      const produtosCategoria =
+        produtos.filter(
+          produto =>
+            Number(produto.categoria_id) ===
+            Number(categoria.id)
+        );
+
+
+      if (!produtosCategoria.length) {
+        return;
+      }
+
+
+      const secao =
+        document.createElement("section");
+
+      secao.className = "categoria";
+
+
+      const titulo =
+        document.createElement("h2");
+
+      titulo.textContent =
+        categoria.nome;
+
+
+      secao.appendChild(titulo);
+
+
+      produtosCategoria.forEach(produto => {
+
+        const card =
+          document.createElement("div");
+
+        card.className = "produto";
+
+
+        const info =
+          document.createElement("div");
+
+        info.className = "produto-info";
+
+
+        const nome =
+          document.createElement("h3");
+
+        nome.textContent =
+          produto.nome;
+
+
+        const descricao =
+          document.createElement("p");
+
+        descricao.textContent =
+          produto.descricao || "";
+
+
+        const preco =
+          document.createElement("div");
+
+        preco.className = "preco";
+
+        preco.textContent =
+          formatarPreco(produto.preco);
+
+
+        info.appendChild(nome);
+        info.appendChild(descricao);
+        info.appendChild(preco);
+
+
+        const botao =
+          document.createElement("button");
+
+        botao.className = "btn";
+
+        botao.textContent =
+          "Adicionar";
+
+
+        botao.onclick = function() {
+
+          adicionarAoCarrinho(produto);
+
+        };
+
+
+        card.appendChild(info);
+
+        card.appendChild(botao);
+
+        secao.appendChild(card);
+
+      });
+
+
+      cardapio.appendChild(secao);
+
+    });
+
+  }
+
+
+  // =====================================================
+  // ADICIONAR AO CARRINHO
+  // =====================================================
+
+  function adicionarAoCarrinho(produto) {
+
+    const existente =
+      carrinho.find(
+        item =>
+          Number(item.produto_id) ===
+          Number(produto.id)
+      );
+
+
+    if (existente) {
+
+      existente.quantidade++;
+
+    } else {
+
+      carrinho.push({
+
+        produto_id: produto.id,
+
+        nome_produto: produto.nome,
+
+        quantidade: 1,
+
+        preco_unitario:
+          Number(produto.preco)
+
+      });
+
+    }
+
+
+    atualizarCarrinho();
+
+  }
+
+
+  // =====================================================
+  // ALTERAR QUANTIDADE
+  // =====================================================
+
+  function alterarQuantidade(
+    produtoId,
+    delta
+  ) {
+
+    const item =
+      carrinho.find(
+        produto =>
+          Number(produto.produto_id) ===
+          Number(produtoId)
+      );
+
+
+    if (!item) {
+      return;
+    }
+
+
+    item.quantidade += delta;
+
+
+    if (item.quantidade <= 0) {
+
+      carrinho =
+        carrinho.filter(
+          produto =>
+            Number(produto.produto_id) !==
+            Number(produtoId)
+        );
+
+    }
+
+
+    atualizarCarrinho();
+
+  }
+
+
+  // =====================================================
+  // ATUALIZAR CARRINHO
+  // =====================================================
+
+  function atualizarCarrinho() {
+
+    const quantidade =
+      carrinho.reduce(
+        (total, item) =>
+          total + item.quantidade,
+        0
+      );
+
+
+    const total =
+      calcularTotal();
+
+
+    document.getElementById(
+      "quantidadeCarrinho"
+    ).textContent =
+      quantidade +
+      (quantidade === 1
+        ? " item"
+        : " itens");
+
+
+    document.getElementById(
+      "totalCarrinho"
+    ).textContent =
+      formatarPreco(total);
+
+
+    atualizarListaCarrinho();
+
+  }
+
+
+  // =====================================================
+  // TOTAL
+  // =====================================================
+
+  function calcularTotal() {
+
+    return carrinho.reduce(
+      (total, item) =>
+        total +
+        (
+          item.preco_unitario *
+          item.quantidade
+        ),
+      0
+    );
+
+  }
+
+
+  // =====================================================
+  // LISTA DO CARRINHO
+  // =====================================================
+
+  function atualizarListaCarrinho() {
+
+    const lista =
+      document.getElementById(
+        "listaCarrinho"
+      );
+
+
+    const total =
+      calcularTotal();
+
+
+    document.getElementById(
+      "totalModal"
+    ).textContent =
+      formatarPreco(total);
+
+
+    document.getElementById(
+      "totalCheckout"
+    ).textContent =
+      formatarPreco(total);
+
+
+    if (!carrinho.length) {
+
+      lista.innerHTML =
+        '<div class="vazio">' +
+        'Seu carrinho está vazio.' +
+        '</div>';
+
+      document.getElementById(
+        "btnCheckout"
+      ).disabled = true;
+
+      return;
+
+    }
+
+
+    document.getElementById(
+      "btnCheckout"
+    ).disabled = false;
+
+
+    lista.innerHTML = "";
+
+
+    carrinho.forEach(item => {
+
+      const div =
+        document.createElement("div");
+
+      div.className =
+        "item-carrinho";
+
+
+      div.innerHTML = `
+
+        <div class="item-info">
+
+          <strong>
+            ${escaparHTML(item.nome_produto)}
+          </strong>
+
+          <small>
+            ${formatarPreco(item.preco_unitario)}
+            cada
+          </small>
+
+        </div>
+
+        <div class="quantidade">
+
+          <button
+            onclick="alterarQuantidade(${item.produto_id}, -1)"
+          >
+            −
+          </button>
+
+          <strong>
+            ${item.quantidade}
+          </strong>
+
+          <button
+            onclick="alterarQuantidade(${item.produto_id}, 1)"
+          >
+            +
+          </button>
+
+        </div>
+
+        <strong>
+          ${formatarPreco(
+            item.preco_unitario *
+            item.quantidade
+          )}
+        </strong>
+
+      `;
+
+
+      lista.appendChild(div);
+
+    });
+
+  }
+
+
+  // =====================================================
+  // ABRIR CARRINHO
+  // =====================================================
+
+  function abrirCarrinho() {
+
+    atualizarListaCarrinho();
+
+    abrirModal("modalCarrinho");
+
+  }
+
+
+  // =====================================================
+  // ABRIR CHECKOUT
+  // =====================================================
+
+  function abrirCheckout() {
+
+    if (!carrinho.length) {
+
+      alert(
+        "Adicione pelo menos um produto."
+      );
+
+      return;
+
+    }
+
+
+    fecharModal("modalCarrinho");
+
+    atualizarListaCarrinho();
+
+    abrirModal("modalCheckout");
+
+  }
+
+
+  // =====================================================
+  // TIPO DE PEDIDO
+  // =====================================================
+
+  function alterarTipoPedido() {
+
+    const tipo =
+      document.getElementById(
+        "tipoPedido"
+      ).value;
+
+
+    const area =
+      document.getElementById(
+        "enderecoArea"
+      );
+
+
+    if (tipo === "entrega") {
+
+      area.classList.remove("oculto");
+
+      document.getElementById(
+        "endereco"
+      ).required = true;
+
+      document.getElementById(
+        "numero"
+      ).required = true;
+
+    } else {
+
+      area.classList.add("oculto");
+
+      document.getElementById(
+        "endereco"
+      ).required = false;
+
+      document.getElementById(
+        "numero"
+      ).required = false;
+
+    }
+
+  }
+
+
+  // =====================================================
+  // ENVIAR PEDIDO
+  // =====================================================
+
+  document
+    .getElementById("formPedido")
+    .addEventListener(
+      "submit",
+      confirmarPedido
+    );
+
+
+  async function confirmarPedido(event) {
+
+    event.preventDefault();
+
+
+    if (!carrinho.length) {
+
+      alert(
+        "Seu carrinho está vazio."
+      );
+
+      return;
+
+    }
+
+
+    if (!estabelecimento) {
+
+      alert(
+        "Estabelecimento não carregado."
+      );
+
+      return;
+
+    }
+
+
+    const btn =
+      document.getElementById(
+        "btnConfirmar"
+      );
+
+
+    const nome =
+      document.getElementById(
+        "nomeCliente"
+      ).value.trim();
+
+
+    const telefone =
+      document.getElementById(
+        "telefone"
+      ).value.trim();
+
+
+    const tipoPedido =
+      document.getElementById(
+        "tipoPedido"
+      ).value;
+
+
+    const endereco =
+      document.getElementById(
+        "endereco"
+      ).value.trim();
+
+
+    const numero =
+      document.getElementById(
+        "numero"
+      ).value.trim();
+
+
+    const complemento =
+      document.getElementById(
+        "complemento"
+      ).value.trim();
+
+
+    const pagamento =
+      document.getElementById(
+        "pagamento"
+      ).value;
+
+
+    const observacao =
+      document.getElementById(
+        "observacao"
+      ).value.trim();
+
+
+    if (!nome) {
+
+      alert("Informe seu nome.");
+
+      return;
+
+    }
+
+
+    if (!telefone) {
+
+      alert("Informe seu telefone.");
+
+      return;
+
+    }
+
+
+    if (
+      tipoPedido === "entrega" &&
+      (!endereco || !numero)
+    ) {
+
+      alert(
+        "Informe o endereço e o número."
+      );
+
+      return;
+
+    }
+
+
+    if (!pagamento) {
+
+      alert(
+        "Selecione a forma de pagamento."
+      );
+
+      return;
+
+    }
+
+
+    const total =
+      Number(
+        calcularTotal().toFixed(2)
+      );
+
+
+    btn.disabled = true;
+
+    btn.textContent =
+      "Enviando pedido...";
+
+
+    try {
+
+      // -----------------------------------------------
+      // CLIENTE
+      // -----------------------------------------------
+
+      const clientes =
+        await supabaseFetch(
+          "clientes?select=id" +
+          "&estabelecimento_id=eq." +
+          estabelecimento.id +
+          "&telefone=eq." +
+          encodeURIComponent(telefone) +
+          "&limit=1"
+        );
+
+
+      let clienteId = null;
+
+
+      if (
+        clientes &&
+        clientes.length
+      ) {
+
+        clienteId =
+          clientes[0].id;
+
+      } else {
+
+        const cliente =
+          await supabaseFetch(
+            "clientes",
+            {
+              method: "POST",
+
+              headers: {
+                "Prefer":
+                  "return=representation"
+              },
+
+              body: JSON.stringify({
+
+                estabelecimento_id:
+                  estabelecimento.id,
+
+                nome: nome,
+
+                telefone: telefone
+
+              })
+
+            }
+          );
+
+
+        if (
+          cliente &&
+          cliente.length
+        ) {
+
+          clienteId =
+            cliente[0].id;
+
+        }
+
+      }
+
+
+      // -----------------------------------------------
+      // PEDIDO
+      // -----------------------------------------------
+
+      const pedido =
+        await supabaseFetch(
+          "pedidos",
+          {
+            method: "POST",
+
+            headers: {
+              "Prefer":
+                "return=representation"
+            },
+
+            body: JSON.stringify({
+
+              estabelecimento_id:
+                estabelecimento.id,
+
+              cliente_id:
+                clienteId,
+
+              nome_cliente:
+                nome,
+
+              telefone:
+                telefone,
+
+              tipo_pedido:
+                tipoPedido,
+
+              endereco:
+                tipoPedido === "entrega"
+                  ? endereco
+                  : null,
+
+              numero:
+                tipoPedido === "entrega"
+                  ? numero
+                  : null,
+
+              complemento:
+                tipoPedido === "entrega"
+                  ? complemento
+                  : null,
+
+              pagamento:
+                pagamento,
+
+              observacao:
+                observacao || null,
+
+              total:
+                total,
+
+              status:
+                "recebido"
+
+            })
+
+          }
+        );
+
+
+      if (
+        !pedido ||
+        !pedido.length
+      ) {
+
+        throw new Error(
+          "O Supabase não retornou o pedido criado."
+        );
+
+      }
+
+
+      const pedidoId =
+        pedido[0].id;
+
+
+      // -----------------------------------------------
+      // ITENS DO PEDIDO
+      // -----------------------------------------------
+
+      const itens =
+        carrinho.map(item => ({
+
+          pedido_id:
+            pedidoId,
+
+          produto_id:
+            item.produto_id,
+
+          nome_produto:
+            item.nome_produto,
+
+          quantidade:
+            item.quantidade,
+
+          preco_unitario:
+            Number(
+              item.preco_unitario.toFixed(2)
+            ),
+
+          subtotal:
+            Number(
+              (
+                item.preco_unitario *
+                item.quantidade
+              ).toFixed(2)
+            )
+
+        }));
+
+
+      await supabaseFetch(
+        "itens_pedido",
+        {
+          method: "POST",
+
+          headers: {
+            "Prefer":
+              "return=representation"
+          },
+
+          body: JSON.stringify(itens)
+
+        }
+      );
+
+
+      // -----------------------------------------------
+      // SUCESSO
+      // -----------------------------------------------
+
+      carrinho = [];
+
+      atualizarCarrinho();
+
+
+      document.getElementById(
+        "mensagemPedido"
+      ).textContent =
+        "Pedido #" +
+        pedidoId +
+        " recebido com sucesso. Obrigado!";
+
+
+      fecharModal("modalCheckout");
+
+      abrirModal("modalSucesso");
+
+
+      document
+        .getElementById("formPedido")
+        .reset();
+
+
+      alterarTipoPedido();
+
+
+    } catch (erro) {
+
+      console.error(
+        "Erro ao criar pedido:",
+        erro
+      );
+
+
+      alert(
+        "Não foi possível enviar o pedido.\n\n" +
+        erro.message
+      );
+
+
+    } finally {
+
+      btn.disabled = false;
+
+      btn.textContent =
+        "Confirmar pedido";
+
+    }
+
+  }
+
+
+  // =====================================================
+  // NOVO PEDIDO
+  // =====================================================
+
+  function novoPedido() {
+
+    fecharModal("modalSucesso");
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+
+  }
+
+
+  // =====================================================
+  // MODAIS
+  // =====================================================
+
+  function abrirModal(id) {
+
+    document
+      .getElementById(id)
+      .classList.add("aberto");
+
+  }
+
+
+  function fecharModal(id) {
+
+    document
+      .getElementById(id)
+      .classList.remove("aberto");
+
+  }
+
+
+  // =====================================================
+  // FORMATAÇÃO
   // =====================================================
 
   function formatarPreco(valor) {
@@ -426,8 +1799,26 @@ const SLUG = "burger-house";
 
 
   // =====================================================
-  // INICIAR
+  // SEGURANÇA BÁSICA PARA HTML
   // =====================================================
+
+  function escaparHTML(texto) {
+
+    return String(texto)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+
+  }
+
+
+  // =====================================================
+  // INICIALIZAÇÃO
+  // =====================================================
+
+  atualizarCarrinho();
 
   carregarCardapio();
 

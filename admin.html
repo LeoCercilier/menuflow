@@ -432,14 +432,20 @@ header {
 </div>
 
 <script>
+  // 1. Pega o ID do estabelecimento que foi salvo no Login (LocalStorage)
+  const ESTABELECIMENTO_ID = localStorage.getItem('estabelecimento_id');
 
-  // 1. Pegar o ID do restaurante salvo no navegador do usuário
-const meuestabelecimentoId = localStorage.getItem('estabelecimento_id');
+  // 2. Se não estiver logado (não tem ID salvo), expulsa para a tela de login
+  if (!ESTABELECIMENTO_ID) {
+    window.location.href = 'login.html';
+  }
 
-// 2. Se não houver ID salvo, redireciona imediatamente para o login
-if (!meuestabelecimentoId) {
-  window.location.href = 'login.html';
-}
+  // 3. Suas credenciais do Supabase
+  const SUPABASE_URL = "https://onrgwxghqcnvmybyqmmj.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_OzQryJ6i5VGOxhFr6DR-iw_b73GHKnQ";
+
+  let todosPedidos = [];
+
   
   const SUPABASE_URL = "https://onrgwxghqcnvmybyqmmj.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_OzQryJ6i5VGOxhFr6DR-iw_b73GHKnQ";

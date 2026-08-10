@@ -322,8 +322,14 @@
 <body>
 
 <header>
-  <h1>MenuFlow — Gestor</h1>
-  <span class="status-conexao" id="statusConexao">Ao vivo</span>
+  <!-- LADO ESQUERDO: Título e Status juntos -->
+  <div class="header-info">
+    <h1>MenuFlow — Gestor</h1>
+    <span class="status-conexao" id="statusConexao">Ao vivo</span>
+  </div>
+
+  <!-- LADO DIREITO: Botão isolado -->
+  <button id="btnSair" onclick="fazerLogout()">Sair da Conta</button>
 </header>
 
 <nav class="nav-painel">

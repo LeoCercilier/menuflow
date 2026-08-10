@@ -41,6 +41,15 @@
   </div>
 
   <script>
+
+    // Verifica se já existe um estabelecimento logado salvo no navegador
+const estabelecimentoSalvo = localStorage.getItem('estabelecimento_id');
+
+if (estabelecimentoSalvo) {
+  // Já está logado! Vai direto para o painel
+  window.location.href = 'admin.html';
+}
+    
     // Configuração do Supabase (Coloque suas credenciais aqui)
     const SUPABASE_URL = 'https://onrgwxghqcnvmybyqmmj.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ucmd3eGdocWNudm15YnlxbW1qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYyODY2MDksImV4cCI6MjEwMTg2MjYwOX0.JvrkPe6M3pgcvDNNvXdXd7JAw8DeeI__tUsdUfFBAXQ';

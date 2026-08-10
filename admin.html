@@ -432,24 +432,28 @@ header {
 </div>
 
 <script>
-  // 1. Pega o ID do estabelecimento que foi salvo no Login (LocalStorage)
+  // 1. Suas credenciais do Supabase
+  const SUPABASE_URL = "https://onrgwxghqcnvmybyqmmj.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_OzQryJ6i5VGOxhFr6DR-iw_b73GHKnQ";
+
+  // 2. Pega o ID do estabelecimento que foi salvo no Login (LocalStorage)
   const ESTABELECIMENTO_ID = localStorage.getItem('estabelecimento_id');
 
-  // 2. Se não estiver logado (não tem ID salvo), expulsa para a tela de login
+  // 3. Se não estiver logado (não tem ID salvo), expulsa para a tela de login
   if (!ESTABELECIMENTO_ID) {
     window.location.href = 'login.html';
   }
 
-  // 3. Suas credenciais do Supabase
-  const SUPABASE_URL = "https://onrgwxghqcnvmybyqmmj.supabase.co";
-  const SUPABASE_ANON_KEY = "sb_publishable_OzQryJ6i5VGOxhFr6DR-iw_b73GHKnQ";
-
-  let todosPedidos = [];
-
-  
-  const SUPABASE_URL = "https://onrgwxghqcnvmybyqmmj.supabase.co";
-  const SUPABASE_ANON_KEY = "sb_publishable_OzQryJ6i5VGOxhFr6DR-iw_b73GHKnQ";
-  const ESTABELECIMENTO_ID = 1; // Burger House
+  // Função utilitária para evitar erros de caractere
+  function escaparHTML(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
 
   let todosPedidos = [];
   let todosProdutos = [];
@@ -477,6 +481,17 @@ header {
     return text ? JSON.parse(text) : null;
   }
 
+  // --- FUNÇÃO DE LOGOUT ---
+  async function fazerLogout() {
+    try {
+      localStorage.removeItem('estabelecimento_id');
+      localStorage.removeItem('estabelecimento_nome');
+    } catch (e) {
+      console.error(e);
+    }
+    window.location.href = 'login.html';
+  }
+
   // --- NAVEGAÇÃO ENTRE ABAS ---
   function trocarAba(aba, btn) {
     document.querySelectorAll('.secao-aba').forEach(s => s.classList.remove('ativa'));
@@ -500,13 +515,17 @@ header {
       renderizarPedidos();
     } catch (err) {
       console.error("Erro ao carregar pedidos:", err);
-      document.getElementById("statusConexao").textContent = "Erro conexão";
-      document.getElementById("statusConexao").style.background = "#dc3545";
+      const statusEl = document.getElementById("statusConexao");
+      if (statusEl) {
+        statusEl.textContent = "Erro conexão";
+        statusEl.style.background = "#dc3545";
+      }
     }
   }
 
   function renderizarPedidos() {
     const grid = document.getElementById("gridPedidos");
+    if (!grid) return;
     grid.innerHTML = "";
 
     const pedidosFiltrados = filtroAtual === 'todos' 
@@ -550,7 +569,7 @@ header {
           <strong>Cliente:</strong> ${escaparHTML(pedido.nome_cliente)}<br>
           <strong>Tel:</strong> ${escaparHTML(pedido.telefone)}<br>
           ${enderecoHTML}<br>
-          <strong>Pagamento:</strong> ${pedido.pagamento.toUpperCase()}
+          <strong>Pagamento:</strong> ${(pedido.pagamento || '').toUpperCase()}
         </div>
         <div class="itens-lista">${itensHTML}</div>
         <div class="total-pedido"><span>Total</span><span>R$ ${Number(pedido.total).toFixed(2)}</span></div>
@@ -600,7 +619,6 @@ header {
   // --- MÓDULO 2: CARDÁPIO (PRODUTOS) ---
   async function carregarCardapioAdmin() {
     try {
-      // Carrega Produtos e Categorias
       const [prods, cats] = await Promise.all([
         supabaseFetch(`produtos?estabelecimento_id=eq.${ESTABELECIMENTO_ID}&order=id.asc`),
         supabaseFetch(`categorias?estabelecimento_id=eq.${ESTABELECIMENTO_ID}&order=ordem.asc`)
@@ -609,9 +627,10 @@ header {
       todosProdutos = prods || [];
       todasCategorias = cats || [];
 
-      // Preenche select de categorias no modal
       const selectCat = document.getElementById("prodCategoria");
-      selectCat.innerHTML = todasCategorias.map(c => `<option value="${c.id}">${escaparHTML(c.nome)}</option>`).join("");
+      if (selectCat) {
+        selectCat.innerHTML = todasCategorias.map(c => `<option value="${c.id}">${escaparHTML(c.nome)}</option>`).join("");
+      }
 
       renderizarTabelaProdutos();
     } catch (err) {
@@ -621,6 +640,8 @@ header {
 
   function renderizarTabelaProdutos() {
     const tbody = document.getElementById("corpoTabelaProdutos");
+    if (!tbody) return;
+
     if (todosProdutos.length === 0) {
       tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Nenhum produto cadastrado.</td></tr>`;
       return;
@@ -635,7 +656,7 @@ header {
         <tr>
           <td><img src="${imagemUrl}" class="img-thumb" alt="Foto"></td>
           <td><strong>${escaparHTML(p.nome)}</strong></td>
-          <td>${cat ? escapingHTML(cat.nome) : 'Geral'}</td>
+          <td>${cat ? escaparHTML(cat.nome) : 'Geral'}</td>
           <td>R$ ${Number(p.preco).toFixed(2)}</td>
           <td>
             <span class="${estaAtivo ? 'badge-ativo' : 'badge-inativo'}">
@@ -653,7 +674,6 @@ header {
     }).join("");
   }
 
-  // Alternar produto entre Disponível e Pausado
   async function toggleStatusProduto(id, novoStatus) {
     try {
       await supabaseFetch(`produtos?id=eq.${id}`, {
@@ -668,7 +688,6 @@ header {
     }
   }
 
-  // Modal Novo / Editar
   function abrirModalProduto() {
     document.getElementById("modalTitulo").textContent = "Novo Produto";
     document.getElementById("formProduto").reset();
@@ -695,32 +714,31 @@ header {
     document.getElementById("modalProduto").style.display = "flex";
   }
 
-  async function salvarProduto(e) {
-    e.preventDefault();
-
+  async function salvarProduto(event) {
+    event.preventDefault();
     const id = document.getElementById("prodId").value;
-    const dados = {
-      estabelecimento_id: ESTABELECIMENTO_ID,
+    
+    const dadosProduto = {
       nome: document.getElementById("prodNome").value,
-      categoria_id: Number(document.getElementById("prodCategoria").value),
+      categoria_id: parseInt(document.getElementById("prodCategoria").value),
       preco: parseFloat(document.getElementById("prodPreco").value),
-      imagem_url: document.getElementById("prodImagem").value || null,
-      descricao: document.getElementById("prodDescricao").value || null,
-      ativo: true
+      imagem_url: document.getElementById("prodImagem").value,
+      descricao: document.getElementById("prodDescricao").value,
+      estabelecimento_id: parseInt(ESTABELECIMENTO_ID)
     };
 
     try {
       if (id) {
-        // UPDATE
+        // Atualiza
         await supabaseFetch(`produtos?id=eq.${id}`, {
           method: "PATCH",
-          body: JSON.stringify(dados)
+          body: JSON.stringify(dadosProduto)
         });
       } else {
-        // INSERT
-        await supabaseFetch("produtos", {
+        // Cria
+        await supabaseFetch(`produtos`, {
           method: "POST",
-          body: JSON.stringify(dados)
+          body: JSON.stringify(dadosProduto)
         });
       }
 
@@ -731,32 +749,8 @@ header {
     }
   }
 
-  function escapingHTML(texto) { return escapingHTML_internal(texto); }
-  function escaparHTML(texto) { return escapingHTML_internal(texto); }
-  function escapingHTML_internal(texto) {
-    return String(texto || "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;");
-  }
-
-  // Inicialização
+  // Inicializa a página carregando os pedidos do restaurante logado
   carregarPedidos();
-  setInterval(carregarPedidos, 10000);
-async function fazerLogout() {
-  if (typeof _supabase !== 'undefined') {
-    await _supabase.auth.signOut();
-  }
-  
-  localStorage.removeItem('estabelecimento_id');
-  localStorage.removeItem('estabelecimento_nome');
-  
-  window.location.href = 'login.html';
-}
-  
-  
 </script>
-
 </body>
 </html>

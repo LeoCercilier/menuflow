@@ -432,6 +432,15 @@ header {
 </div>
 
 <script>
+
+  // 1. Pegar o ID do restaurante salvo no navegador do usuário
+const meuestabelecimentoId = localStorage.getItem('estabelecimento_id');
+
+// 2. Se não houver ID salvo, redireciona imediatamente para o login
+if (!meuestabelecimentoId) {
+  window.location.href = 'login.html';
+}
+  
   const SUPABASE_URL = "https://onrgwxghqcnvmybyqmmj.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_OzQryJ6i5VGOxhFr6DR-iw_b73GHKnQ";
   const ESTABELECIMENTO_ID = 1; // Burger House

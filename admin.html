@@ -317,6 +317,14 @@
       color: #777;
       grid-column: 1 / -1;
     }
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+}
+    
+    
   </style>
 </head>
 <body>
@@ -721,6 +729,18 @@
   // Inicialização
   carregarPedidos();
   setInterval(carregarPedidos, 10000);
+async function fazerLogout() {
+  if (typeof _supabase !== 'undefined') {
+    await _supabase.auth.signOut();
+  }
+  
+  localStorage.removeItem('estabelecimento_id');
+  localStorage.removeItem('estabelecimento_nome');
+  
+  window.location.href = 'login.html';
+}
+  
+  
 </script>
 
 </body>
